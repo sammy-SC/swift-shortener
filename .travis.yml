@@ -11,10 +11,12 @@ before_install:
             brew tap vapor/tap;
             brew update;
             brew install vapor;
+            brew install vapor/tap/cmysql;
         else
             eval "$(curl -sL https://apt.vapor.sh)";
             sudo apt-get install vapor;
             sudo chmod -R a+rx /usr/;
+            sudo apt-get install cmysql;
         fi
 
 script:
