@@ -3,7 +3,7 @@ os:
     - osx
 language: generic
 sudo: required
-dist: xenial
+dist: trusty
 
 osx_image: xcode9.1
 before_install:
@@ -20,8 +20,8 @@ before_install:
         fi
 
 script:
-    - swift build
-    - swift build -c release
+    - swift build -DNOJSON
+    - swift build -DNOJSON -c release
     - swift test --parallel
 
 after_success:
