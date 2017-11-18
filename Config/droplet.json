@@ -30,14 +30,17 @@
     "//": "date: Adds the 'Date' header to HTTP requests.",
     "//": "file: Catches 404 errors and checks for files in the Public/ folder",
     "middleware": [
-        "error",
-        "date",
-        "file"
-    ],
+                   "error",
+                   "date",
+                   "file"
+                   ],
 
     "//": "Choose which commands this application can run",
     "//": "prepare: Supplied by the Fluent provider. Prepares the database (configure in fluent.json)",
     "commands": [
-        "prepare"
-    ]
+                 "prepare"
+                 ],
+
+    "view": "leaf"
 }
+

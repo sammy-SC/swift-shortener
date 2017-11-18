@@ -1,0 +1,19 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Swifty Shortener</title>
+</head>
+
+<body>
+  #if(link) {
+    <input type="text" disabled value="#(link)">
+  } ##else() {
+    <form method="POST">
+      <input type="text" name="link">
+      <input type="submit" value="Generate link">
+    </form>
+  }
+</body>
+</html>

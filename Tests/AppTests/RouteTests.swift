@@ -5,35 +5,65 @@ import HTTP
 @testable import Vapor
 @testable import App
 
-/// This file shows an example of testing 
-/// routes through the Droplet.
-
 class RouteTests: TestCase {
-    let drop = try! Droplet.testable()
-    
-    func testHello() throws {
-        try drop
-            .testResponse(to: .get, at: "hello")
-            .assertStatus(is: .ok)
-            .assertJSON("hello", equals: "world")
+    var drop: Droplet!
+    override func setUp() {
+        super.setUp()
+        drop = try! Droplet.testable()
     }
 
-    func testInfo() throws {
-        try drop
-            .testResponse(to: .get, at: "info")
+    func testHomepage() throws {
+        try drop.testResponse(to: .get, at: "/")
             .assertStatus(is: .ok)
-            .assertBody(contains: "0.0.0.0")
+            .assertBody(contains: "<input type=\"text\" name=\"link\">")
+    }
+
+    func testCreationFromForm() throws {
+        let node = try Node(["link": "www.google.com"]).formURLEncoded()
+
+        let body: Body = .data(node)
+
+        let request = Request(method: .post,
+                              uri: "/",
+                              headers: [HeaderKey.contentType: "application/x-www-form-urlencoded"],
+                              body: body)
+        try drop
+            .testResponse(to: request)
+            .assertStatus(is: .ok)
+            .assertBody(contains: "localhost:8080/1")
+    }
+
+    func testCreationFromJSON() throws {
+        let requestBody = try Body(["link": "www.google.com"])
+        let request = Request(method: .post,
+                              uri: "/",
+                              headers: [HeaderKey.contentType: "application/json"],
+                              body: requestBody)
+
+        try drop
+            .testResponse(to: request)
+            .assertStatus(is: .ok)
+            .assertJSON("link", equals: "localhost:8080/1")
+    }
+
+    func testRedirect() throws {
+        let link = try Link(node: ["link": "www.google.com"])
+        try link.save()
+        try drop
+            .testResponse(to: .get, at: "/1")
+            .assertStatus(is: .movedPermanently)
+            .assertHeader("Location", contains: "www.google.com")
     }
 }
 
 // MARK: Manifest
 
 extension RouteTests {
-    /// This is a requirement for XCTest on Linux
-    /// to function properly.
-    /// See ./Tests/LinuxMain.swift for examples
     static let allTests = [
-        ("testHello", testHello),
-        ("testInfo", testInfo),
+        ("testHomepage", testHomepage),
+        ("testCreationFromForm", testCreationFromForm),
+        ("testCreationFromJSON", testCreationFromJSON),
+        ("testRedirect", testRedirect)
     ]
 }
+
